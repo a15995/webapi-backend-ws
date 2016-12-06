@@ -35,10 +35,11 @@ namespace Backend.WebApi.Controllers
             {
                 if (product.Id == id) // Hvis product.Id = 1 findes i uri http://localhost:x/api/products/1
                 {
-                    return Ok(product); // ...så returnér Ok(produktdetaljer)
+                    return product; // ...så returnér Ok(produktdetaljer)
                 }
             }
-            throw new NotFoundException(); // ... ellers returnér NotFound (tom streng).
+            var message = string.Format("Produktet med id = {0} ikke fundet", id);
+            throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound, message)); // ... ellers kast ny NotFoundException (returnerer tekst).
         }
 
         /*public IHttpActionResult GetProduct(int id) // Tester om et givent id findes i Product-arrayet og returnerer product-detaljer (Ok) i Postman.
