@@ -7,12 +7,12 @@ namespace Backend.WebApi
 {
     public class Review
     {
-        private int id;
+        private int id; // Felt
         private int productId;
         private int rating;
         private string text;
 
-        public int Id
+        public int Id // Property
         {
             get
             {

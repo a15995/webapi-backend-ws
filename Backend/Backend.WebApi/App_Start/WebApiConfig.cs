@@ -11,10 +11,10 @@ namespace Backend.WebApi
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-            //config.Services.Replace(typeof(IExceptionHandler), new MyExceptionHandler());
+            config.Services.Replace(typeof(IExceptionHandler), new NotFoundHandler());
 
             // Web API routes
-            config.MapHttpAttributeRoutes();
+            config.MapHttpAttributeRoutes(); // Gør det muligt at tilføje egen URI [RoutePrefix]/[Route] samt metoden f.eks. [HttpGet] i controlleren
 
             /*config.Routes.MapHttpRoute(
                 name: "DefaultApi",

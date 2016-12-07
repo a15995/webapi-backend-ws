@@ -7,12 +7,12 @@ namespace Backend.WebApi
 {
     public class Product
     {
-        private int id;
+        private int id; // Felt
         private string name;
         private string category;
         private decimal price;
 
-        public int Id
+        public int Id // Property
         {
             get
             {
