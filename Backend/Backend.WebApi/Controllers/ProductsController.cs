@@ -24,6 +24,7 @@ namespace Backend.WebApi.Controllers
             new Review(3, 3, 8, "Superfede jeans af høj kvalitet!")
         };
 
+        [Route("")]
         public IEnumerable<Product> GetAllProducts()
         {
             return products;

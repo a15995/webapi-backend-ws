@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
 
-namespace Backend.WebApi
+namespace Backend.WebApiFiltersAndHandlers
 {
     public static class WebApiConfig
     {
@@ -12,12 +11,11 @@ namespace Backend.WebApi
         {
             // Web API configuration and services
             config.Filters.Add(new MyFilter());
-            config.Services.Replace(typeof(IExceptionHandler), new NotFoundHandler());
 
             // Web API routes
-            config.MapHttpAttributeRoutes(); // Gør det muligt at tilføje egen URI [RoutePrefix]/[Route] samt metoden f.eks. [HttpGet] i controlleren
+            /*config.MapHttpAttributeRoutes();
 
-            /*config.Routes.MapHttpRoute(
+            config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
