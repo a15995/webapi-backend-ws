@@ -11,8 +11,9 @@ namespace Backend.WebApi
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-            config.Filters.Add(new MyFilter());
-            config.Services.Replace(typeof(IExceptionHandler), new NotFoundHandler());
+            config.Services.Replace(typeof(IExceptionHandler), new NotFoundHandler()); // Sætter Exception Handler til NotFound (Exception.cs)
+            //config.Filters.Add(new VersionCheckFilter()); // Aktivér denne for at bruge Action Filters (Filter.cs)
+            config.MessageHandlers.Add(new VersionCheckHandler()); // Aktivér denne for at bruge Delegating Handlers (Filters.cs)
 
             // Web API routes
             config.MapHttpAttributeRoutes(); // Gør det muligt at tilføje egen URI [RoutePrefix]/[Route] samt metoden f.eks. [HttpGet] i controlleren
