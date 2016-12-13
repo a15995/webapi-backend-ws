@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="ProductServiceClient.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Filters.cs" />
@@ -129,6 +130,8 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Properties\PublishProfiles\DeathStarWebAPI - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\DeathStarWebAPI - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
