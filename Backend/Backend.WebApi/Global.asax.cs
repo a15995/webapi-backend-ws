@@ -11,7 +11,9 @@ namespace Backend.WebApi
     {
         protected void Application_Start()
         {
+            Controllers.ProductsController controller = new Controllers.ProductsController();
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            controller.InitializeSampleData();
         }
     }
 }

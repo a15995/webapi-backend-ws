@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,9 +15,12 @@ namespace Backend.WebApi.Controllers
     {
         private Product[] products = new Product[] // Initiér array, der vha. constructor (Product.cs) tilføjer produkter til arrayet (databasen).
         {
-            new Product(1, "LaCoste", "Poloshirt", (decimal)299.95),
-            new Product(2, "Boss", "Pants", (decimal)1299.95),
-            new Product(3, "Levis", "T-shirt", (decimal)399.95)
+            //new Product(1, "LaCoste", "Poloshirt", (decimal)299.95),
+            //new Product(2, "Boss", "Pants", (decimal)1299.95),
+            //new Product(3, "Levis", "T-shirt", (decimal)399.95)
+            new Product("LaCoste", "Poloshirt", (double)300),
+            new Product("Boss", "Pants", (double)1300),
+            new Product("Levis", "T-shirt", (double)400)
         };
 
         private Review[] reviews = new Review[] // Initiér array, der vha. constructor (Review.cs) tilføjer anmeldelser til arrayet (databasen).
@@ -64,14 +70,43 @@ namespace Backend.WebApi.Controllers
         [HttpGet] // GET-metode
         public Product GetProduct(int id)
         {
-            foreach (Product product in products)
+            /*foreach (Product product in products)
             {
                 if (product.Id == id) // Hvis id = 1 findes i URI {RoutePrefix}/{productId}
                 {
                     return product; // ...så returnér produktdetaljer
                 }
-            }
+            }*/
             throw new NotFoundException(); // ... ellers kast ny NotFoundException (returnerer tekst).
+        }
+
+        private CloudTableClient CreateTableClient()
+        {
+            // Parse the connection string and return a reference to the storage account.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                CloudConfigurationManager.GetSetting("StorageConnectionString"));
+
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+            return tableClient;
+        }
+
+        internal void InitializeSampleData()
+        {
+            var client = CreateTableClient(); // Sæt variablen klient til tableClient
+
+            // Retrieve a reference to the table.
+            CloudTable table = client.GetTableReference("products");
+
+            // Create the table if it doesn't exist.
+            table.CreateIfNotExists();
+
+            foreach (Product product in products)
+            {
+                TableOperation insertOperation = TableOperation.InsertOrReplace(product); // Indsæt eller erstat indholdet i databasen fra lokal liste
+                table.Execute(insertOperation); // Udfør operationen
+            }
         }
     }
 }

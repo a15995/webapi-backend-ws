@@ -22,7 +22,7 @@ namespace Backend.WebApi
                 if (response.IsSuccessStatusCode)
                 {
                     Product product = await response.Content.ReadAsAsync<Product>();
-                    return product;
+                    // return product; // FEJL som skal rettes - return skal indeholde en liste!
                 }
                 return null;
             }

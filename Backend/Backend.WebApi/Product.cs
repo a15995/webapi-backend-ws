@@ -1,24 +1,25 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Backend.WebApi
 {
-    public class Product
+    public class Product : TableEntity
     {
-        private int id; // Felt
+        //private int id; // Felt
         private string name;
         private string category;
-        private decimal price;
+        private double price;
 
-        public int Id // Property
+        /*public int Id // Property
         {
             get
             {
                 return id;
             }
-        }
+        }*/
         public string Name
         {
             get
@@ -33,7 +34,7 @@ namespace Backend.WebApi
                 return category;
             }
         }
-        public decimal Price
+        public double Price
         {
             get
             {
@@ -41,9 +42,9 @@ namespace Backend.WebApi
             }
         }
 
-        public Product(int id, string name, string category, decimal price) // Constructor
+        public Product(string name, string category, double price) // Constructor
         {
-            this.id = id;
+            //this.id = id;
             this.name = name;
             this.category = category;
             this.price = price;
