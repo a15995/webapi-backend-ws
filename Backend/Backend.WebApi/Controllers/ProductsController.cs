@@ -3,6 +3,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,25 +16,34 @@ namespace Backend.WebApi.Controllers
     {
         private Product[] products = new Product[] // Initiér array, der vha. constructor (Product.cs) tilføjer produkter til arrayet (databasen).
         {
-            //new Product(1, "LaCoste", "Poloshirt", (decimal)299.95),
-            //new Product(2, "Boss", "Pants", (decimal)1299.95),
-            //new Product(3, "Levis", "T-shirt", (decimal)399.95)
-            new Product("LaCoste", "Poloshirt", (double)300),
-            new Product("Boss", "Pants", (double)1300),
-            new Product("Levis", "T-shirt", (double)400)
+            //new Product { Id = 1, Name = "LaCoste", Category = "Poloshirt", Price = 299.95 },
+            //new Product { Id = 2, Name = "Boss", Category = "Pants", Price = 1299.95 },
+            //new Product { Id = 3, Name = "Levis", Category = "T-shirt", Price = 399.95 }
+            new Product { PartitionKey = "ProductKey", RowKey = "0", Name = "LaCoste", Category = "Poloshirt", Price = 299.95 },
+            new Product { PartitionKey = "ProductKey", RowKey = "1", Name = "Boss", Category = "Pants", Price = 1299.95 },
+            new Product { PartitionKey = "ProductKey", RowKey = "2", Name = "Levis", Category = "T-shirt", Price = 399.95 }
         };
 
         private Review[] reviews = new Review[] // Initiér array, der vha. constructor (Review.cs) tilføjer anmeldelser til arrayet (databasen).
         {
-            new Review(1, 1, 10, "Super fed polohakker der!"),
-            new Review(2, 1, 5, "Sidder for stramt, ellers fedt!"),
-            new Review(3, 3, 8, "Superfede jeans af høj kvalitet!")
+            new Review { Id = 1, ProductId = 1, Rating = 10, Text = "Super fed polohakker der!" },
+            new Review { Id = 2, ProductId = 1, Rating = 5, Text = "Sidder for stramt, ellers fedt!" },
+            new Review { Id = 3, ProductId = 3, Rating = 8, Text = "Superfede jeans af høj kvalitet!" }
         };
 
         [Route("")]
+        [HttpGet] // GET-metode
         public IEnumerable<Product> GetAllProducts()
         {
-            return products;
+            CloudTableClient tableClient = CreateTableClient(); // Sæt variablen client til tableClient
+            CloudTable table = tableClient.GetTableReference("Products");
+            var query =
+                from entity in table.CreateQuery<Product>()
+                where entity.PartitionKey == "ProductKey"
+                select entity;
+
+            return query;
+            // return products;
         }
 
         /*public IHttpActionResult GetProduct(int id) // Tester om et givent id findes i Product-arrayet og returnerer product-detaljer (Ok) i Postman.
@@ -48,7 +58,7 @@ namespace Backend.WebApi.Controllers
            return NotFound(); // ... ellers returnér NotFound (tom streng).
        }*/
 
-       [Route("{productId}/reviews")] // URI til reviews konstrueres
+        [Route("{productId}/reviews")] // URI til reviews konstrueres
        [HttpGet] // GET-metode
        public IEnumerable<Review> GetReviewsForProduct(int productId)
        {
@@ -68,7 +78,7 @@ namespace Backend.WebApi.Controllers
 
         [Route("{id}")] // URI til reviews konstrueres
         [HttpGet] // GET-metode
-        public Product GetProduct(int id)
+        public Product GetProduct(string id) // Ændret fra int til string
         {
             /*foreach (Product product in products)
             {
@@ -76,15 +86,42 @@ namespace Backend.WebApi.Controllers
                 {
                     return product; // ...så returnér produktdetaljer
                 }
+            }
+            throw new NotFoundException(); // ... ellers kast ny NotFoundException (returnerer tekst).*/
+            CloudTableClient tableClient = CreateTableClient();
+            CloudTable table = tableClient.GetTableReference("Products");
+            var query =
+                from entity in table.CreateQuery<Product>()
+                where entity.PartitionKey == "ProductKey" && entity.RowKey == id
+                select entity;
+
+            var res = query.FirstOrDefault();
+            
+            return res;
+            
+            // Alternativ metode med LINQ og anden result-type
+
+            /*public IHttpActionResult GetProduct(int id)
+            {
+                var product = this.products.Where(p => p.Id == id)
+                    .SingleOrDefault();
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(product);
+                }
             }*/
-            throw new NotFoundException(); // ... ellers kast ny NotFoundException (returnerer tekst).
         }
 
         private CloudTableClient CreateTableClient()
         {
             // Parse the connection string and return a reference to the storage account.
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            CloudStorageAccount storageAccount =
+                CloudStorageAccount.Parse(
+                    ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -94,10 +131,10 @@ namespace Backend.WebApi.Controllers
 
         internal void InitializeSampleData()
         {
-            var client = CreateTableClient(); // Sæt variablen klient til tableClient
+            CloudTableClient tableClient = CreateTableClient(); // Sæt variablen client til tableClient
 
             // Retrieve a reference to the table.
-            CloudTable table = client.GetTableReference("products");
+            CloudTable table = tableClient.GetTableReference("Products");
 
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();

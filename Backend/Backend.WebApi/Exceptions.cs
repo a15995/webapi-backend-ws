@@ -23,7 +23,7 @@ namespace Backend.WebApi
                 StatusCodeResult NotFound = new StatusCodeResult(HttpStatusCode.NotFound, context.Request); // ...skal handleren sætte context.Result til en instans af StatusCodeResult med HttpStatusCode.NotFound.
                 context.Result = NotFound;
             }
-            return Task.FromResult("404 Not Found"); // FromResult vises ikke men der kræves en parameter
+            return Task.FromResult("404 Not Found"); // FromResult vises ikke, men der kræves en parameter
         }
     }
 }

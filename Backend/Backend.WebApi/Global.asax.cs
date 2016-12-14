@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Backend.WebApi.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,10 +10,10 @@ namespace Backend.WebApi
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        protected void Application_Start()
+        protected void Application_Start() // 7. Indsæt et kald til InitializeSampleData() i Global.asax.cs filens Application_Start metode (lav en ny instans af ProductsController først).
         {
-            Controllers.ProductsController controller = new Controllers.ProductsController();
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            ProductsController controller = new ProductsController();
             controller.InitializeSampleData();
         }
     }
