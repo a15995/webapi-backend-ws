@@ -136,6 +136,9 @@ namespace Backend.WebApi.Controllers
             // Retrieve a reference to the table.
             CloudTable table = tableClient.GetTableReference("Products");
 
+            // Slet tabellen hvis den eksisterer.
+            //table.DeleteIfExists();
+
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();
 
